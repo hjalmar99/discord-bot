@@ -3,7 +3,9 @@ import asyncio
 import logging
 import os
 import random
+from random import randint
 import re
+from ordsprak import ordsprok_list as ord_list
 
 
 logger = logging.getLogger(__name__)
@@ -26,8 +28,17 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    if message.content.startswith('!ping'):
+    if message.content == '!ping':
         await client.send_message(message.channel, 'Pong!')
+
+    if message.content == '!mäng':
+        await client.send_message(message.channel, 'Mong!')
+
+    if message.content.startswith ('!ordspråk'):
+        random.shuffle(ord_list)
+        num = randint(1, len(ord_list))
+        await client.send_message(message.channel, '{}'.format(ord_list[num - 1]))
+
 
     if message.content.startswith('!throw'):
         r = re.match('^!throw (?P<num>\d+) d(?P<sides>\d+)$', message.content)
@@ -39,5 +50,7 @@ async def on_message(message):
             await client.send_message(message.channel, ', '.join(dice))
         else:
             await client.send_message(message.channel, 'Syntax is:\n!throw <number of dice> d<number of sides>')
+
+
 
 client.run(os.environ.get('TOKEN'))
